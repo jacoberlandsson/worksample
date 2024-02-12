@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace TollFeeCalculator
 {
-    public class Car : Vehicle
-    {
-        public String GetVehicleType()
-        {
-            return "Car";
-        }
-    }
+    //Funktionaliteten flyttad till Vehicle.cs
+
+    //public class Car : Vehicle
+    //{
+    //    public String GetVehicleType()
+    //    {
+    //        return "Car";
+    //    }
+    //}
 }

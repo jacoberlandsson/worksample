@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TollFeeCalculator
-{
-    public class Motorbike : Vehicle
-    {
-        public string GetVehicleType()
-        {
-            return "Motorbike";
-        }
-    }
-}
+//Funktionaliteten flyttad till Vehicle.cs
+
+//namespace TollFeeCalculator
+//{
+//    public class Motorbike : Vehicle
+//    {
+//        public string GetVehicleType()
+//        {
+//            return "Motorbike";
+//        }
+//    }
+//}
