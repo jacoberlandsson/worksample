@@ -4,72 +4,64 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TollFeeCalculator
+
+namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarhet
 {
-    public interface IVehicle
-    {
-        int Id { get; }
-        string Name { get; }
-        string Make { get; }
-        string Owner { get; }
-        string GetVehicleType();
-        VehicleType Type { get; }
-    }
 
     public class Car : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Car";
+            return VehicleType.Car;
         }
     }
 
     public class Motorbike : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "MotorBike";
+            return VehicleType.Motorbike;
         }
     }
 
 
     public class Tractor : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Tractor";
+            return VehicleType.Tractor;
         }
     }
 
     public class Emergency : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Emergency";
+            return VehicleType.Emergency;
         }
     }
 
     public class Diplomat : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Diplomat";
+            return VehicleType.Diplomat;
         }
     }
 
     public class Foreign : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Foreign";
+            return VehicleType.Foreign;
         }
     }
 
     public class Military : IVehicle
     {
-        public string GetVehicleType()
+        public VehicleType GetVehicleType()
         {
-            return "Military";
+            return VehicleType.Military;
         }
     }
 

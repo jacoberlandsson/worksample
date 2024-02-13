@@ -2,8 +2,11 @@
 using System.Globalization;
 using TollFeeCalculator;
 
+//Refaktorering av metoder.
+//Använder IVehicle istället för vehicle - skalbart.
 
-namespace TollFeeCalculator
+
+namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarhet
 { 
 
     public class TollCalculator
@@ -17,14 +20,61 @@ namespace TollFeeCalculator
          * @return - the total toll fee for that day
          */
 
-        public GetTollFee(Vehicle vehicle, DateTime[] dates)
+        //Använder och tittar på VehicleType-propertyn i IVehicle så att samma används överallt.
+
+        private readonly HashSet<VehicleType> tollFreeVehicles = new HashSet<VehicleType>
+        {
+            VehicleType.Motorbike,
+            VehicleType.Tractor,
+            VehicleType.Emergency,
+            VehicleType.Diplomat,
+            VehicleType.Foreign,
+            VehicleType.Military,
+        };
+
+        // Tänker att det är samma datum varje år, så bortser från år och gör en lista med de "hårda" datumen.
+        private readonly HashSet<(int Month, int Day)> tollFreeMonthDays = new HashSet<(int, int)>
+        {
+            (1, 1),
+            (3, 28),
+            (3, 29),
+            (5, 1),
+            (5, 8),
+            (5, 9),
+            (6, 5),
+            (6, 6),
+            (6, 21),
+            (11, 1),
+            (12, 24),
+            (12, 25),
+            (12, 26),
+            (12, 31),
+        };
+
+        //Tänker att det är lättare att ändra i denna lista än att ändra logiken i metoden GetTollFee()
+        private readonly List<(TimeSpan Start, TimeSpan End, int Fee)> tollFees = new List<(TimeSpan, TimeSpan, int)>
+        {
+            (TimeSpan.Parse("06:00"), TimeSpan.Parse("06:29"), 8),
+            (TimeSpan.Parse("06:30"), TimeSpan.Parse("06:59"), 13),
+            (TimeSpan.Parse("07:00"), TimeSpan.Parse("07:59"), 18),
+            (TimeSpan.Parse("08:00"), TimeSpan.Parse("08:29"), 13),
+            (TimeSpan.Parse("08:30"), TimeSpan.Parse("14:59"), 13),
+            (TimeSpan.Parse("15:00"), TimeSpan.Parse("15:29"), 13),
+            (TimeSpan.Parse("15:30"), TimeSpan.Parse("16:59"), 18),
+            (TimeSpan.Parse("17:00"), TimeSpan.Parse("17:59"), 13),
+            (TimeSpan.Parse("18:00"), TimeSpan.Parse("18:29"), 8),
+        };
+
+        public int GetTollFee(IVehicle vehicle, DateTime[] dates)
         {
             if (dates == null || dates.Length == 0) return 0; // Kontrollerar att "dates" inte är null eller att det inte finns några
             Array.Sort(dates); // Sortera "dates" för att hantera dem i kronologisk ordning
 
-            const int maxTotalFee = 60; //setting the max fee/ day
+            int maxTotalFee = 60; //sätter maxavgift per dag
             DateTime intervalStart = dates[0];
             int totalFee = 0;
+            int highestFeeInInterval = 0; //Variabel som ska hålla koll på högsta avgiften om fordon får flera avgifter under 60min.
+
             foreach (DateTime date in dates)
             {
                 int currentFee = GetTollFee(date, vehicle);
@@ -45,80 +95,62 @@ namespace TollFeeCalculator
             return Math.Min(totalFee, maxTotalFee);
         }
 
-
-
-
-        private readonly HashSet<VehicleType> tollFreeVehicles = new HashSet<VehicleType>
+        public int GetTollFee(DateTime date, IVehicle vehicle)
         {
-            VehicleType.Motorbike,
-            VehicleType.Tractor,
-            VehicleType.Emergency,
-            VehicleType.Diplomat,
-            VehicleType.Foreign,
-            VehicleType.Military,
-        };
+            if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle))
+            {
+                return 0;
+            }
 
-        public bool IsTollFreeVehicle(Vehicle vehicle)
+            var timeOfDay = date.TimeOfDay;
+
+            foreach (var (Start, End, Fee) in tollFees)
+            {
+                if (timeOfDay >= Start && timeOfDay <= End)
+                {
+                    return Fee;
+                }
+            }
+
+            return 0; 
+        }
+    }
+
+    //Använder och tittar på VehicleType-propertyn i IVehicle så att samma används överallt.
+    public bool IsTollFreeVehicle(IVehicle vehicle)
+    {
+        if (vehicle == null) return false;
+        return tollFreeVehicles.Contains(vehicle.Type);
+    }
+
+    
+    private bool IsTollFreeDate(DateTime date)
+    {
+        if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
         {
-            if (vehicle == null) return false;
-            return tollFreeVehicles.Contains(vehicle.Type);
+            return true;
+        }
+        
+        if(date.Month == 7) 
+        { 
+            return true; 
         }
 
-    //    public int GetTollFee(DateTime date, Vehicle vehicle)
-    //    {
-    //        if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
+        if (tollFreeMonthDays.Contains((date.Month, date.Day)))
+        {
+            return true;
+        }
 
-    //        int hour = date.Hour;
-    //        int minute = date.Minute;
+        DateTime previousDay = date.AddDays(-1);
 
-    //        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-    //        else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-    //        else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-    //        else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-    //        else if (hour >= 8 && hour <= 14 && minute >= 30 && minute <= 59) return 8;
-    //        else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-    //        else if (hour == 15 && minute >= 0 || hour == 16 && minute <= 59) return 18;
-    //        else if (hour == 17 && minute >= 0 && minute <= 59) return 13;
-    //        else if (hour == 18 && minute >= 0 && minute <= 29) return 8;
-    //        else return 0;
-    //    }
+        // Check if the previous day is a toll-free day
+        if (tollFreeMonthDays.Contains((previousDay.Month, previousDay.Day)))
+        {
+            return true;
+        }
 
-
-
-    //    private bool IsTollFreeDate(DateTime date)
-    //    {
-    //        int year = date.Year;
-    //        int month = date.Month;
-    //        int day = date.Day;
-
-    //        if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) return true;
-
-    //        if (year == 2013)
-    //        {
-    //            if (month == 1 && day == 1 ||
-    //                month == 3 && (day == 28 || day == 29) ||
-    //                month == 4 && (day == 1 || day == 30) ||
-    //                month == 5 && (day == 1 || day == 8 || day == 9) ||
-    //                month == 6 && (day == 5 || day == 6 || day == 21) ||
-    //                month == 7 ||
-    //                month == 11 && day == 1 ||
-    //                month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
-    //            {
-    //                return true;
-    //            }
-    //        }
-    //        return false;
-    //    }
-
-    //    private enum TollFreeVehicles
-    //    {
-    //        Motorbike = 0,
-    //        Tractor = 1,
-    //        Emergency = 2,
-    //        Diplomat = 3,
-    //        Foreign = 4,
-    //        Military = 5
-    //    }
-    //}
-
+        return false;
+    }
 }
+
+
