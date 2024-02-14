@@ -3,7 +3,7 @@ using System.Globalization;
 using TollFeeCalculator;
 
 //Refaktorering av metoder.
-//Använder IVehicle istället för vehicle - skalbart.
+//Använder IVehicle istället för Vehicle.
 
 
 namespace TollFeeCalculator //alla filer ligger inom samma namespace för nåbarhet

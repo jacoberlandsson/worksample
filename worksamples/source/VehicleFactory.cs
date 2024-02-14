@@ -1,5 +1,5 @@
 
-namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarhet
+namespace TollFeeCalculator //alla filer ligger inom samma namespace fÃ¶r nÃ¥barhet
 {
     public static class VehicleFactory
     {
