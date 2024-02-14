@@ -6,7 +6,7 @@ using TollFeeCalculator;
 //Använder IVehicle istället för vehicle - skalbart.
 
 
-namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarhet
+namespace TollFeeCalculator //alla filer ligger inom samma namespace för nåbarhet
 { 
 
     public class TollCalculator
@@ -51,7 +51,8 @@ namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarh
             (12, 31),
         };
 
-        //Tänker att det är lättare att ändra i denna lista än att ändra logiken i metoden GetTollFee()
+        //Tänker att det är lättare att ändra i denna lista än att ändra både tider och logik i metoden GetTollFee(),
+        //om man skulle behöva ändra i ett senare skede.
         private readonly List<(TimeSpan Start, TimeSpan End, int Fee)> tollFees = new List<(TimeSpan, TimeSpan, int)>
         {
             (TimeSpan.Parse("06:00"), TimeSpan.Parse("06:29"), 8),
@@ -114,43 +115,46 @@ namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarh
 
             return 0; 
         }
-    }
 
-    //Använder och tittar på VehicleType-propertyn i IVehicle så att samma används överallt.
-    public bool IsTollFreeVehicle(IVehicle vehicle)
-    {
-        if (vehicle == null) return false;
-        return tollFreeVehicles.Contains(vehicle.Type);
+        //Använder och tittar på VehicleType-propertyn i IVehicle så att samma används överallt.
+        public bool IsTollFreeVehicle(IVehicle vehicle)
+        {
+            if (vehicle == null) return false;
+            return tollFreeVehicles.Contains(vehicle.Type);
+        }
+
+
+        private bool IsTollFreeDate(DateTime date)
+        {
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return true;
+            }
+
+            if (date.Month == 7) //Juli är trängselskattefritt
+            {
+                return true;
+            }
+
+            if (tollFreeMonthDays.Contains((date.Month, date.Day))) //Kollar om datumet är ett avgiftsfritt datum enligt listan,
+                                                                    //med avgiftsfria datum.
+            {
+                return true;
+            }
+
+            DateTime previousDay = date.AddDays(-1); // Kolla
+
+            // Check if the previous day is a toll-free day
+            if (tollFreeMonthDays.Contains((previousDay.Month, previousDay.Day)))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     
-    private bool IsTollFreeDate(DateTime date)
-    {
-        if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
-        {
-            return true;
-        }
-        
-        if(date.Month == 7) 
-        { 
-            return true; 
-        }
-
-        if (tollFreeMonthDays.Contains((date.Month, date.Day)))
-        {
-            return true;
-        }
-
-        DateTime previousDay = date.AddDays(-1);
-
-        // Check if the previous day is a toll-free day
-        if (tollFreeMonthDays.Contains((previousDay.Month, previousDay.Day)))
-        {
-            return true;
-        }
-
-        return false;
-    }
 }
 
 

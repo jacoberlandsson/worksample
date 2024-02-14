@@ -10,60 +10,92 @@ namespace TollFeeCalculator //alla filer ligger inom samma namspace för nåbarh
 
     public class Car : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Car;
+
+        public Car(string registrationNumber)
         {
-            return VehicleType.Car;
+            RegistrationNumber = registrationNumber;
         }
     }
 
     public class Motorbike : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Motorbike;
+
+        public Motorbike(string registrationNumber)
         {
-            return VehicleType.Motorbike;
+            RegistrationNumber = registrationNumber;
         }
     }
 
 
     public class Tractor : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Tractor;
+
+        public Tractor(string registrationNumber)
         {
-            return VehicleType.Tractor;
+            RegistrationNumber = registrationNumber;
         }
     }
+
 
     public class Emergency : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Emergency;
+
+        public Emergency(string registrationNumber)
         {
-            return VehicleType.Emergency;
+            RegistrationNumber = registrationNumber;
         }
     }
+
 
     public class Diplomat : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Diplomat;
+
+        public Diplomat(string registrationNumber)
         {
-            return VehicleType.Diplomat;
+            RegistrationNumber = registrationNumber;
         }
     }
 
+
     public class Foreign : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Foreign;
+
+        public Foreign(string registrationNumber)
         {
-            return VehicleType.Foreign;
+            RegistrationNumber = registrationNumber;
         }
     }
 
     public class Military : IVehicle
     {
-        public VehicleType GetVehicleType()
+        public Guid Id { get; } = Guid.NewGuid();
+        public string RegistrationNumber { get; private set; }
+        public VehicleType Type { get; } = VehicleType.Military;
+
+        public Military(string registrationNumber)
         {
-            return VehicleType.Military;
+            RegistrationNumber = registrationNumber;
         }
     }
+
 
     public enum VehicleType
     {
